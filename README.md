@@ -1,8 +1,13 @@
 # Microservices GitOps Project
 
-A hands-on DevOps learning project demonstrating a Python-based microservices architecture using FastAPI.
+A hands-on DevOps learning project demonstrating a Python-based microservices architecture using FastAPI, Docker and Docker Compose.
 
-The project contains two independent services: **User Service** and **Order Service**. The Order Service communicates with the User Service to retrieve customer information.
+The project contains two independent services:
+
+- **User Service** – manages user information.
+- **Order Service** – manages order information and communicates with the User Service.
+
+The goal is to progressively implement containerization, Kubernetes orchestration, CI/CD automation and GitOps deployment.
 
 ## 1. Architecture
 
@@ -16,6 +21,10 @@ flowchart TD
     B --> E[Order Data]
 ```
 
+### Service communication
+
+The Order Service calls the User Service to retrieve the user associated with an order.
+
 ## 2. Technology Stack
 
 | Technology | Purpose |
@@ -25,6 +34,8 @@ flowchart TD
 | Uvicorn | ASGI application server |
 | HTTPX | Service-to-service communication |
 | Pydantic | Data validation |
+| Docker | Containerization |
+| Docker Compose | Multi-container orchestration |
 | Git & GitHub | Version control |
 
 ## 3. Project Structure
@@ -33,27 +44,114 @@ flowchart TD
 microservices-gitops/
 ├── services/
 │   ├── user-service/
-│   │   └── main.py
+│   │   ├── main.py
+│   │   └── Dockerfile
 │   └── order-service/
-│       └── main.py
+│       ├── main.py
+│       └── Dockerfile
+├── docker/
+├── kubernetes/
+├── helm/
+├── gitops/
+├── tests/
 ├── docs/
-│   └── daily-progress/
-│       └── day-02.md
+│   ├── daily-progress/
+│   └── troubleshooting/
+├── .github/
+├── docker-compose.yml
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-## 4. Run Locally
+## 4. Run with Docker Compose
 
-Clone the repository:
+### Prerequisites
+
+- Docker Desktop
+- Docker Compose
+- Git
+
+### Clone the repository
 
 ```bash
 git clone https://github.com/Kanishkcanny/microservices-gitops.git
 cd microservices-gitops
 ```
 
-Create and activate a virtual environment:
+### Build and start services
+
+```bash
+docker compose up -d --build
+```
+
+### Check running containers
+
+```bash
+docker compose ps
+```
+
+### View service logs
+
+```bash
+docker compose logs -f
+```
+
+### Stop services
+
+```bash
+docker compose down
+```
+
+## 5. API Endpoints
+
+### User Service – Port 8001
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/health` | Health check |
+| GET | `/users` | List users |
+| GET | `/docs` | Interactive API documentation |
+
+### Order Service – Port 8002
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/health` | Health check |
+| GET | `/orders` | List orders |
+| GET | `/orders/{order_id}` | Get an order |
+| GET | `/orders/{order_id}/details` | Get order with associated user |
+| GET | `/docs` | Interactive API documentation |
+
+## 6. Test the Services
+
+After starting Docker Compose, test the endpoints:
+
+```bash
+curl http://localhost:8001/health
+curl http://localhost:8001/users
+curl http://localhost:8002/health
+curl http://localhost:8002/orders
+curl http://localhost:8002/orders/101/details
+```
+
+Expected health-check responses:
+
+```json
+{"status":"healthy","service":"user-service"}
+```
+
+```json
+{"status":"healthy","service":"order-service"}
+```
+
+The order details endpoint should return order information together with the associated user information.
+
+**Note:** If localhost port forwarding does not work from your WSL environment, test the published ports from Windows PowerShell or follow the documented networking troubleshooting procedure.
+
+## 7. Run Locally Without Docker
+
+Create a virtual environment:
 
 ```bash
 python3 -m venv .venv
@@ -66,67 +164,41 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-### Start User Service
+Start the User Service in Terminal 1:
 
 ```bash
 uvicorn services.user-service.main:app --host 0.0.0.0 --port 8001
 ```
 
-### Start Order Service
-
-Open a second terminal, activate the same virtual environment, and run:
+Start the Order Service in Terminal 2:
 
 ```bash
 uvicorn services.order-service.main:app --host 0.0.0.0 --port 8002
 ```
 
-## 5. API Endpoints
+## 8. Troubleshooting
 
-**User Service — Port 8001**
+Troubleshooting reports and investigation notes are maintained in the `docs/troubleshooting/` directory.
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET | `/health` | Health check |
-| GET | `/users` | List users |
-| GET | `/docs` | Interactive API documentation |
+Topics include:
 
-**Order Service — Port 8002**
+- WSL and Docker Desktop networking.
+- Container-to-container communication.
+- Host-to-container connectivity.
+- API endpoint validation.
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET | `/health` | Health check |
-| GET | `/orders` | List orders |
-| GET | `/orders/{order_id}` | Get an order |
-| GET | `/orders/{order_id}/details` | Get order with associated user |
-| GET | `/docs` | Interactive API documentation |
-
-## 6. Test the Services
-
-```bash
-curl http://localhost:8001/health
-curl http://localhost:8001/users
-curl http://localhost:8002/health
-curl http://localhost:8002/orders
-curl http://localhost:8002/orders/101/details
-```
-
-The order details endpoint retrieves the associated user from the User Service.
-
-## 7. Current Implementation Status
+## 9. Current Implementation Status
 
 - [x] User Service
 - [x] Order Service
 - [x] REST API endpoints
-- [x] Health check endpoints
+- [x] Health-check endpoints
 - [x] HTTP service-to-service communication
 - [x] Local API testing
-- [x] Git version control
-- [x] GitHub repository
-
-## 8. Roadmap
-
-- [ ] Dockerfiles for both services
-- [ ] Docker Compose
+- [x] Dockerfiles for both services
+- [x] Docker Compose configuration
+- [x] Container networking validation
+- [ ] Automated application tests
 - [ ] Kubernetes deployments and services
 - [ ] Helm charts
 - [ ] GitHub Actions CI/CD
@@ -134,14 +206,28 @@ The order details endpoint retrieves the associated user from the User Service.
 - [ ] Prometheus and Grafana monitoring
 - [ ] Cloud deployment
 
-## 9. Learning Objectives
+## 10. Roadmap
+
+The project will be developed incrementally:
+
+1. Build and validate microservices.
+2. Containerize both services.
+3. Automate builds and tests with GitHub Actions.
+4. Deploy services to Kubernetes.
+5. Package deployments with Helm.
+6. Implement GitOps using Argo CD.
+7. Add monitoring with Prometheus and Grafana.
+8. Explore cloud deployment.
+
+## 11. Learning Objectives
 
 This project is intended to demonstrate practical understanding of:
 
 - Microservices architecture
 - REST API development
 - Service-to-service communication
-- Containerization
+- Docker and containerization
+- Docker Compose networking
 - Kubernetes orchestration
 - CI/CD automation
 - GitOps workflows
@@ -149,10 +235,8 @@ This project is intended to demonstrate practical understanding of:
 
 ## Repository
 
-[GitHub — microservices-gitops](https://github.com/Kanishkcanny/microservices-gitops)
+[GitHub – microservices-gitops](https://github.com/Kanishkcanny/microservices-gitops)
 
----
-
-**Project Status:** Initial microservices prototype implemented. DevOps automation and deployment stages are planned.
+**Project Status:** Microservices prototype with Docker Compose implemented. Kubernetes, CI/CD and GitOps stages are planned.
 
 **Author:** Kanishka Bhardwaj
