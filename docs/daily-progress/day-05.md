@@ -1,6 +1,23 @@
 
 # Day 05 - Automated Testing
 
+## Docker Hub Publishing
+
+- Created Docker Hub repositories for user-service and order-service.
+- Configured GitHub Actions repository secrets.
+- Added Docker Hub authentication to the CI workflow.
+- Built and tagged Docker images using the Git commit SHA.
+- Published both `latest` and commit-specific tags.
+- Verified both images on Docker Hub.
+- Confirmed linux/amd64 architecture.
+
+## Verification
+
+- User Service image: Published successfully.
+- Order Service image: Published successfully.
+- GitHub Actions workflow: Successful.
+- Automated API tests: 12 passed.
+
 ## Completed
 - Created User Service API tests.
 - Created Order Service API tests.
@@ -23,7 +40,9 @@
 - Tests pass; dependency compatibility cleanup is pending.
 
 ## Next Steps
-- Review test coverage and add failure scenarios.
-- Add automated tests to GitHub Actions.
+- Review test coverage and add more failure scenarios.
+- Resolve the HTTPX TestClient deprecation warning.
 - Review Docker image security and size.
-- Plan Kubernetes deployment.
+- Create Kubernetes deployment and service manifests.
+- Deploy both microservices to Kubernetes.
+- Validate service-to-service communication.
