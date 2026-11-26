@@ -1,0 +1,51 @@
+name: Microservices CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-validate:
+    name: Validate and Build Services
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate Python syntax
+        run: |
+          python -m compileall -q services
+
+      - name: Validate Docker Compose
+        run: |
+          docker compose config --quiet
+
+      - name: Build User Service image
+        run: |
+          docker build \
+            -f services/user-service/Dockerfile \
+            -t user-service:ci .
+
+      - name: Build Order Service image
+        run: |
+          docker build \
+            -f services/order-service/Dockerfile \
+            -t order-service:ci .
