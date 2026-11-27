@@ -2,21 +2,25 @@
 
 ## Completed
 - Integrated pytest into GitHub Actions.
-- Configured automated tests to run after dependency installation.
-- Kept Python syntax validation.
-- Kept Docker Compose validation.
-- Kept Docker image build steps.
+- Configured automated tests after dependency installation.
+- Added Python syntax validation.
+- Added Docker Compose validation.
 - Updated GitHub Actions dependencies to Node 24-compatible versions.
 
 ## Validation
-- Local automated tests: 12 passed.
+- Automated tests: 12 passed.
 - GitHub Actions workflow: Successful.
 - User Service image build: Passed.
 - Order Service image build: Passed.
 - Python syntax validation: Passed.
 - Docker Compose validation: Passed.
 
+## Key Learnings
+- GitHub Actions workflow integration.
+- Automated testing with pytest.
+- Python syntax validation in CI.
+- Docker Compose configuration validation.
+
 ## Next Steps
-- Publish Docker images to a container registry.
-- Add image tagging and versioning.
 - Prepare Kubernetes deployment manifests.
+- Plan Kubernetes deployment and validation.
