@@ -7,7 +7,7 @@ resources:
   - ../../base
 
 replicas:
-  - name: user-service
-    count: 1
   - name: order-service
-    count: 1
+    count: 2
+  - name: user-service
+    count: 2
